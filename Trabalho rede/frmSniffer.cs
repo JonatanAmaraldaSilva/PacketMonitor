@@ -38,12 +38,30 @@ namespace Trabalho_rede
             this.MinimumSize = this.Size;
             timer.Elapsed += Timer_Elapsed;
             this.CriaCombos();
-            dgvPacotes.CellClick += dgv_Click;
 
+            this.incluiEventos();
         }
 
-        // Implementa o manipulador de eventos
-        private  void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void incluiEventos()
+        {
+
+            this.dgvPacotes.CellClick += dgv_Click;
+            this.FormClosing += MainForm_FormClosing;
+        }
+
+        private void StopThread()
+        {
+            thread.Suspend();
+            
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.StopThread();
+        }
+
+            // Implementa o manipulador de eventos
+            private  void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             Invoke(new Action(() =>
             {
@@ -64,11 +82,12 @@ namespace Trabalho_rede
         {
             if (inicia == false)
             {
+                //this.pacoteList.Clear();
                 this.btnIniciarParar.Text = "Parar";
                 inicia = true;
                 var protocoloenum = (Enums.Protocolos)Enum.Parse(typeof(Enums.Protocolos), this.cmbProtocolos.SelectedValue.ToString());
                 objCaptura = new CapturaPacotes(this.device, protocoloenum);
-                Thread thread = new Thread(() => objCaptura.iniciaCaptura(pacoteList, inicia));
+                thread = new Thread(() => objCaptura.iniciaCaptura(pacoteList, inicia));
                 thread.Start();
                 timer.Start();
             }
@@ -76,6 +95,7 @@ namespace Trabalho_rede
             {
                 this.btnIniciarParar.Text = "Iniciar";
                 inicia = false;
+                thread.Suspend();
                 timer.Stop();
                 //this.atualizaGrid();
             }
@@ -86,6 +106,7 @@ namespace Trabalho_rede
         private void btnLimpa_Click(object sender, EventArgs e)
         {
             this.pacoteList.Clear();
+            this.atualizaGrid();
         }
 
         private void dgv_Click(object sender, DataGridViewCellEventArgs e)
@@ -96,22 +117,40 @@ namespace Trabalho_rede
             Pacote pacoteSel = this.pacoteList.Find(x=> x.NrPacote == Convert.ToInt32(this.dgvPacotes.CurrentRow.Cells["NrPacote"].Value));
 
            
-            this.treeView1.Nodes.Add(string.Concat("versão: ", pacoteSel.Ipv4.Version.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("CabecalhoTamanho: ", pacoteSel.Ipv4.HeaderLenght.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Versão: ", pacoteSel.Ipv4.Version.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Cabeçalho tamanho: ", pacoteSel.Ipv4.HeaderLenght.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Tipo de serviço: ", pacoteSel.Ipv4.Typeofservice.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Tamanho total: ", pacoteSel.Ipv4.TotalLength.ToString()));
+
             this.treeView1.Nodes.Add(string.Concat("Identificação: ", pacoteSel.Ipv4.Identification.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Flags: ", pacoteSel.Ipv4.Flags.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Fragment Offset: ", pacoteSel.Ipv4.FragmentOffset.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Time to live: ", pacoteSel.Ipv4.Ttl.ToString()));
 
-            this.treeView1.Nodes.Add(string.Concat("tempo de vida: ", pacoteSel.Ipv4.Ttl.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("checksum: ", pacoteSel.Ipv4.HeaderChecksum.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("endereço origem: ", pacoteSel.Ipv4.SourceIP.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("endereço destino: ", pacoteSel.Ipv4.DestinationIP.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("tamanho total: ", pacoteSel.Ipv4.TotalLength.ToString()));
+            TreeNode node;
 
-            TreeNode node= new TreeNode(String.Concat("protocolo: ", "TCP"));
+            if (pacoteSel.Ipv4.Tcp is null == false)
+            {
+                node = new TreeNode(String.Concat("protocolo: ", "TCP"));
+            }
+            else
+            {
+                node = new TreeNode(String.Concat("protocolo: ", "UDP"));
+            }
 
             node.Nodes.Add(string.Concat("porta origem: ", pacoteSel.Ipv4.Tcp.PortaOrigem.ToString()));
             node.Nodes.Add(string.Concat("porta destino: ", pacoteSel.Ipv4.Tcp.PortaDestino.ToString()));
             node.Nodes.Add(string.Concat("checksum: ", pacoteSel.Ipv4.Tcp.ChecsumTCP.ToString()));
             this.treeView1.Nodes.Add(node);
+
+            this.treeView1.Nodes.Add(string.Concat("HeaderCheckSum: ", pacoteSel.Ipv4.HeaderChecksum.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Endereço origem: ", pacoteSel.Ipv4.SourceIP.ToString()));
+            this.treeView1.Nodes.Add(string.Concat("Endereço destino: ", pacoteSel.Ipv4.DestinationIP.ToString()));
+
+
+            this.txtData.Text = pacoteSel.Ipv4.Data;
+            //this.txtData.Text = pacoteSel.Ipv4.Tcp.Data;
+
         }
 
             private void atualizaGrid()

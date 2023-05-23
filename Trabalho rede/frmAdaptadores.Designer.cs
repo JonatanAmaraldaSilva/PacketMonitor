@@ -28,52 +28,43 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgvAdpatadores = new System.Windows.Forms.DataGridView();
-            this.btnIniciar = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAdpatadores)).BeginInit();
+            this.dgvAdaptadores = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAdaptadores)).BeginInit();
             this.SuspendLayout();
             // 
-            // dgvAdpatadores
+            // dgvAdaptadores
             // 
-            this.dgvAdpatadores.AllowUserToAddRows = false;
-            this.dgvAdpatadores.AllowUserToDeleteRows = false;
-            this.dgvAdpatadores.AllowUserToOrderColumns = true;
-            this.dgvAdpatadores.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvAdpatadores.Location = new System.Drawing.Point(12, 22);
-            this.dgvAdpatadores.Name = "dgvAdpatadores";
-            this.dgvAdpatadores.ReadOnly = true;
-            this.dgvAdpatadores.Size = new System.Drawing.Size(511, 325);
-            this.dgvAdpatadores.TabIndex = 0;
-            // 
-            // btnIniciar
-            // 
-            this.btnIniciar.Location = new System.Drawing.Point(160, 374);
-            this.btnIniciar.Name = "btnIniciar";
-            this.btnIniciar.Size = new System.Drawing.Size(75, 23);
-            this.btnIniciar.TabIndex = 1;
-            this.btnIniciar.Text = "Iniciar";
-            this.btnIniciar.UseVisualStyleBackColor = true;
-            this.btnIniciar.Click += new System.EventHandler(this.btnIniciar_Click);
+            this.dgvAdaptadores.AllowUserToAddRows = false;
+            this.dgvAdaptadores.AllowUserToDeleteRows = false;
+            this.dgvAdaptadores.AllowUserToOrderColumns = true;
+            this.dgvAdaptadores.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvAdaptadores.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvAdaptadores.Location = new System.Drawing.Point(12, 22);
+            this.dgvAdaptadores.Name = "dgvAdaptadores";
+            this.dgvAdaptadores.ReadOnly = true;
+            this.dgvAdaptadores.RowHeadersVisible = false;
+            this.dgvAdaptadores.Size = new System.Drawing.Size(545, 325);
+            this.dgvAdaptadores.TabIndex = 0;
             // 
             // frmAdaptadores
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(569, 450);
-            this.Controls.Add(this.btnIniciar);
-            this.Controls.Add(this.dgvAdpatadores);
+            this.ClientSize = new System.Drawing.Size(569, 363);
+            this.Controls.Add(this.dgvAdaptadores);
             this.KeyPreview = true;
             this.Name = "frmAdaptadores";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmAdapatores";
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAdpatadores)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAdaptadores)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dgvAdpatadores;
-        private System.Windows.Forms.Button btnIniciar;
+        private System.Windows.Forms.DataGridView dgvAdaptadores;
     }
 }

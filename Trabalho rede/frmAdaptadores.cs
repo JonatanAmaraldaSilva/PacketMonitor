@@ -21,6 +21,7 @@ namespace Trabalho_rede
         {
             InitializeComponent();
             this.MinimumSize = this.Size;
+            this.dgvAdaptadores.CellDoubleClick += dataGridView1_CellDoubleClick;
 
             // Lista de dispositivos
            devices = CaptureDeviceList.Instance;
@@ -36,19 +37,24 @@ namespace Trabalho_rede
 
         }
 
-        private void atualizaGrid()
+        private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            this.inicia();
+        }
+
+            private void atualizaGrid()
         {
             // Define a origem de dados para o DataGridView
             BindingSource bindingSource = new BindingSource();
             bindingSource.DataSource = dispositivosLst;
 
             // Atribui a origem de dados ao DataGridView
-            this.dgvAdpatadores.DataSource = bindingSource;
+            this.dgvAdaptadores.DataSource = bindingSource;
         }
 
-        private void dgvPacotes_CellDoubleClick()
+        private void inicia()
         {
-            Dispositivo dev = dispositivosLst.Find(x => x.NrDispositivo == Convert.ToInt32(this.dgvAdpatadores.CurrentRow.Cells["NrDispositivo"].Value));
+            Dispositivo dev = dispositivosLst.Find(x => x.NrDispositivo == Convert.ToInt32(this.dgvAdaptadores.CurrentRow.Cells["NrDispositivo"].Value));
             ICaptureDevice device = devices[dev.NrDispositivo];
 
             var TelaSniffer = new frmSniffer(device);
@@ -57,10 +63,6 @@ namespace Trabalho_rede
 
         }
 
-        private void btnIniciar_Click(object sender, EventArgs e)
-        {
-            this.dgvPacotes_CellDoubleClick();
-        }
     }
 
 

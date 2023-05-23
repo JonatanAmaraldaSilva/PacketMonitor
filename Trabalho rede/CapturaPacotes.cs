@@ -9,6 +9,8 @@ using SharpPcap.WinpkFilter;
 using PacketDotNet;
 using System.Net.Sockets;
 using System.Security.AccessControl;
+using System.Data.SqlTypes;
+using System.Runtime.InteropServices;
 
 namespace Trabalho_rede
 {
@@ -16,6 +18,7 @@ namespace Trabalho_rede
     {
         private ICaptureDevice device;
         private Enums.Protocolos protocolo;
+        private string filter = "";
 
         public ICaptureDevice Device { get => device; set => device = value; }
         public Enums.Protocolos Protocolo { get => protocolo; set => protocolo = value; }
@@ -32,20 +35,30 @@ namespace Trabalho_rede
             int readTime = 1000;
             device.Open(DeviceModes.Promiscuous, readTime);
 
-            string filter = "";
+            switch (this.Protocolo)
+            {
+                case Enums.Protocolos.TCP:
+                    this.filter = "ip and tcp";
+                    break;
+                case Enums.Protocolos.UDP:
+                    this.filter = "ip and udp";
+                    break;
+
+            }
+
+
             //filter = this.protocolo.ToString();
             device.Filter = filter;
 
             PacketCapture e;
 
-            int nrPacote = 0;
+            int nrPacote = 1;
 
             while (device.GetNextPacket(out e) != null || stop == false)
             {
                 try
                 {
                     nrPacote += 1;
-
 
                     // DateTime time = packet.PcapHeader.Date;
                     DateTime time = e.GetPacket().Timeval.Date.AddHours(-3);
@@ -56,59 +69,55 @@ namespace Trabalho_rede
 
                     IPv4Packet ipv4Pacote = p.Extract<IPv4Packet>();
 
-                    var linkLayer = e.GetPacket().LinkLayerType;
+                    //var linkLayer = e.GetPacket().LinkLayerType;
                     string protocolo = ipv4Pacote.Protocol.ToString();
                     var sourceAddress = ipv4Pacote.SourceAddress.ToString();
                     var destinationAddress = ipv4Pacote.DestinationAddress.ToString();
-                    var TTL = ipv4Pacote.TimeToLive.ToString();
-                    var checksum = ipv4Pacote.Checksum;
-                    var ischecksum = ipv4Pacote.ValidChecksum;
+                    //var TTL = ipv4Pacote.TimeToLive.ToString();
+                    //var checksum = ipv4Pacote.Checksum;
+                    //var ischecksum = ipv4Pacote.ValidChecksum;
+
+                    IPv4Header ipv4 = new IPv4Header(ipv4Pacote);
 
                     if (protocolo == "Tcp")
                     {
-                        IPv4Header ipv4 = new IPv4Header();
-                        ipv4.Protocol = protocolo;
-                        ipv4.TotalLength = ipv4Pacote.TotalLength;
-                        ipv4.Dscp = ipv4Pacote.DifferentiatedServices;
-                        ipv4.Version = ipv4Pacote.Version;
-                        ipv4.HeaderChecksum = ipv4Pacote.Checksum;
-                        ipv4.HeaderLenght = ipv4Pacote.HeaderLength;
-                        ipv4.Identification = ipv4Pacote.Id;
-                        ipv4.Ttl = ipv4Pacote.TimeToLive;
-                        ipv4.FragmentOffset = ipv4.FragmentOffset;
-                        ipv4.SourceIP = ipv4.SourceIP;
-                        ipv4.DestinationIP = ipv4.DestinationIP;
 
                         TcpPacket tcpPacote = p.Extract<TcpPacket>();
 
-                        ipv4.Tcp = new TCP(tcpPacote.DestinationPort.ToString(),tcpPacote.SourcePort.ToString(), tcpPacote.Checksum.ToString());
 
-                        pacoteList.Add(new Pacote(nrPacote, sourceAddress, destinationAddress, Enums.Protocolos.TCP, ipv4));
+                        var data = BitConverter.ToString(tcpPacote.BytesSegment.Bytes).Replace("-", "");
+
+                        ipv4.Tcp = new TCP(tcpPacote.DestinationPort.ToString(), tcpPacote.SourcePort.ToString(), tcpPacote.Checksum.ToString(), data);
+
+                        var f =tcpPacote.Flags;
+
+                        var a = tcpPacote.HeaderData.ToString();
+                        var b = tcpPacote.Acknowledgment.ToString();
+                        var c = tcpPacote.Synchronize.ToString();
+                        var d = tcpPacote.Urgent;
+                        var i = tcpPacote.Push.ToString(); 
+                        var g = tcpPacote.Reset.ToString();
+                        var h = tcpPacote.Finished.ToString();
+                        var v = tcpPacote.SequenceNumber.ToString();
+                        var j = tcpPacote.WindowSize.ToString();
+                        var t = tcpPacote.AcknowledgmentNumber.ToString();
+                        pacoteList.Add(new Pacote(nrPacote, sourceAddress, destinationAddress, Enums.Protocolos.TCP, ipv4, time));
                     }
-
-
-
-                    var portaDestino = "";
-                    var portaOrigem = "";
-                    var checsumTCP = "";
-
-                    if (protocolo == "Tcp")
+                    else if(protocolo == "Udp")
                     {
-                        TcpPacket tcpPacote = p.Extract<TcpPacket>();
-
-                        portaDestino = tcpPacote.DestinationPort.ToString();
-                        portaOrigem = tcpPacote.SourcePort.ToString();
-                        checsumTCP = tcpPacote.Checksum.ToString();
 
                     }
+
+
+                    nrPacote += 1;
 
                 }
-                catch 
-                { 
+                catch
+                {
                 }
 
                 // Prints the time and length of each received packet
-              
+
 
 
             }

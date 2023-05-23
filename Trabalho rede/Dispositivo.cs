@@ -18,8 +18,8 @@ namespace Trabalho_rede
 
         public Dispositivo(int nrdispositivo, string descricao)
         {
-            this.nrdispositivo = nrdispositivo;
-            this.descricao = descricao;
+            this.NrDispositivo = nrdispositivo;
+            this.Descricao = descricao;
         }
     }
 }
