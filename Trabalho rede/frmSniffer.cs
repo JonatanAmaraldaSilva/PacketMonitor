@@ -11,8 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Timers;
-
-
+using System.CodeDom;
+using System.Reflection;
 
 namespace Trabalho_rede
 {
@@ -26,9 +26,6 @@ namespace Trabalho_rede
         bool inicia = false;
 
         System.Timers.Timer timer = new System.Timers.Timer(1000);
-
-
-
 
         public frmSniffer(ICaptureDevice device)
         {
@@ -102,7 +99,6 @@ namespace Trabalho_rede
 
         }
 
-
         private void btnLimpa_Click(object sender, EventArgs e)
         {
             this.pacoteList.Clear();
@@ -116,41 +112,30 @@ namespace Trabalho_rede
 
             Pacote pacoteSel = this.pacoteList.Find(x=> x.NrPacote == Convert.ToInt32(this.dgvPacotes.CurrentRow.Cells["NrPacote"].Value));
 
-           
-            this.treeView1.Nodes.Add(string.Concat("Versão: ", pacoteSel.Ipv4.Version.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Cabeçalho tamanho: ", pacoteSel.Ipv4.HeaderLenght.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Tipo de serviço: ", pacoteSel.Ipv4.Typeofservice.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Tamanho total: ", pacoteSel.Ipv4.TotalLength.ToString()));
+            this.montaTreeView(pacoteSel.Ipv4,this.treeView1.Nodes);
+          
+        }
 
-            this.treeView1.Nodes.Add(string.Concat("Identificação: ", pacoteSel.Ipv4.Identification.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Flags: ", pacoteSel.Ipv4.Flags.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Fragment Offset: ", pacoteSel.Ipv4.FragmentOffset.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Time to live: ", pacoteSel.Ipv4.Ttl.ToString()));
+        static bool IsPropriedadeSimples(PropertyInfo propriedade)
+        {
+            return propriedade.PropertyType.IsPrimitive || propriedade.PropertyType == typeof(string);
+        }
 
-            TreeNode node;
-
-            if (pacoteSel.Ipv4.Tcp is null == false)
+        private void montaTreeView(object objeto, TreeNodeCollection tv)
+        {
+            foreach (PropertyInfo propInfo in objeto.GetType().GetProperties())
             {
-                node = new TreeNode(String.Concat("protocolo: ", "TCP"));
+                if (!IsPropriedadeSimples(propInfo))
+                {                  
+                    TreeNode node = new TreeNode(propInfo.Name.ToUpper());
+                    this.montaTreeView(propInfo.GetValue(objeto), node.Nodes);
+                    tv.Add(node);
+                }
+                else
+                {
+                    tv.Add(string.Format("{0}: {1}", propInfo.Name, propInfo.GetValue(objeto)));
+                }     
             }
-            else
-            {
-                node = new TreeNode(String.Concat("protocolo: ", "UDP"));
-            }
-
-            node.Nodes.Add(string.Concat("porta origem: ", pacoteSel.Ipv4.Tcp.PortaOrigem.ToString()));
-            node.Nodes.Add(string.Concat("porta destino: ", pacoteSel.Ipv4.Tcp.PortaDestino.ToString()));
-            node.Nodes.Add(string.Concat("checksum: ", pacoteSel.Ipv4.Tcp.ChecsumTCP.ToString()));
-            this.treeView1.Nodes.Add(node);
-
-            this.treeView1.Nodes.Add(string.Concat("HeaderCheckSum: ", pacoteSel.Ipv4.HeaderChecksum.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Endereço origem: ", pacoteSel.Ipv4.SourceIP.ToString()));
-            this.treeView1.Nodes.Add(string.Concat("Endereço destino: ", pacoteSel.Ipv4.DestinationIP.ToString()));
-
-
-            this.txtData.Text = pacoteSel.Ipv4.Data;
-            //this.txtData.Text = pacoteSel.Ipv4.Tcp.Data;
-
         }
 
             private void atualizaGrid()

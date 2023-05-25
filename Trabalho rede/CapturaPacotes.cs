@@ -58,24 +58,19 @@ namespace Trabalho_rede
             {
                 try
                 {
-                    nrPacote += 1;
+                
 
-                    // DateTime time = packet.PcapHeader.Date;
+                   
                     DateTime time = e.GetPacket().Timeval.Date.AddHours(-3);
-                    //int len = packet.PcapHeader.PacketLength;
                     int len = e.GetPacket().PacketLength;
 
                     Packet p = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
 
                     IPv4Packet ipv4Pacote = p.Extract<IPv4Packet>();
 
-                    //var linkLayer = e.GetPacket().LinkLayerType;
                     string protocolo = ipv4Pacote.Protocol.ToString();
                     var sourceAddress = ipv4Pacote.SourceAddress.ToString();
                     var destinationAddress = ipv4Pacote.DestinationAddress.ToString();
-                    //var TTL = ipv4Pacote.TimeToLive.ToString();
-                    //var checksum = ipv4Pacote.Checksum;
-                    //var ischecksum = ipv4Pacote.ValidChecksum;
 
                     IPv4Header ipv4 = new IPv4Header(ipv4Pacote);
 
@@ -83,7 +78,6 @@ namespace Trabalho_rede
                     {
 
                         TcpPacket tcpPacote = p.Extract<TcpPacket>();
-
 
                         var data = BitConverter.ToString(tcpPacote.BytesSegment.Bytes).Replace("-", "");
 
