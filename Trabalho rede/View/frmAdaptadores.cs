@@ -1,13 +1,17 @@
 ﻿using SharpPcap;
 using System;
+using System.Windows.Forms;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Microsoft;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 
 namespace Trabalho_rede
 {
@@ -24,7 +28,7 @@ namespace Trabalho_rede
             this.dgvAdaptadores.CellDoubleClick += dataGridView1_CellDoubleClick;
 
             // Lista de dispositivos
-           devices = CaptureDeviceList.Instance;
+            devices = CaptureDeviceList.Instance;
 
             int count = 0;
             foreach (ICaptureDevice dev in devices)
@@ -33,16 +37,41 @@ namespace Trabalho_rede
                 count += 1;
 
             }
+
+            this.criaGrid();
             this.atualizaGrid();
 
         }
+
+
+        private void criaGrid()
+        {
+
+            dgvAdaptadores.Columns.AddRange(new DataGridViewColumn[]{
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Nr do Dispositivo",
+                                                Name = "NrDispositivo",
+                                                DataPropertyName = "NrDispositivo",
+                                                Width = 70
+                                            },
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Descrição do dispositivo",
+                                                Name = "Descricao",
+                                                DataPropertyName = "Descricao",
+                                                Width = 471
+                                            }});
+
+        }
+
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             this.inicia();
         }
 
-            private void atualizaGrid()
+        private void atualizaGrid()
         {
             // Define a origem de dados para o DataGridView
             BindingSource bindingSource = new BindingSource();

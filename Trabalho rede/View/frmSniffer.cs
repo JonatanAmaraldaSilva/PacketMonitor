@@ -18,25 +18,70 @@ namespace Trabalho_rede
 {
     public partial class frmSniffer : Form
     {
-
+      
         List<Pacote> pacoteList = new List<Pacote>();
         CapturaPacotes objCaptura;
         ICaptureDevice device;
         Thread thread;
         bool inicia = false;
-
-        System.Timers.Timer timer = new System.Timers.Timer(1000);
+        System.Timers.Timer timer = new System.Timers.Timer(500);
 
         public frmSniffer(ICaptureDevice device)
         {
             InitializeComponent();
-            this.device = device;
-            this.lblAdaptador.Text = this.device.Description;
-            this.MinimumSize = this.Size;
-            timer.Elapsed += Timer_Elapsed;
-            this.CriaCombos();
 
+            this.MinimumSize = this.Size;
+            this.device = device;
+            this.lblAdaptador.Text = this.device.Description;       
+            timer.Elapsed += Timer_Elapsed;
+
+            this.CriaCombos();
+            this.montaGrid();
             this.incluiEventos();
+        }
+
+
+        private void montaGrid()
+        {
+            this.dgvPacotes.AutoGenerateColumns = false;
+            dgvPacotes.Columns.AddRange(new DataGridViewColumn[]{
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Nr. Pacote",
+                                                Name = "NrPacote",
+                                                DataPropertyName = "NrPacote",
+                                                Width = 100
+                                            },
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Hora",
+                                                Name = "Hora",
+                                                DataPropertyName = "Hora",
+                                                DefaultCellStyle = new DataGridViewCellStyle{ Format ="HH:mm:ss.fff"} ,
+                                                Width = 100
+                                            },
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Fonte",
+                                                Name = "Fonte",
+                                                DataPropertyName = "Fonte",
+                                                Width = 120
+                                            },
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Destino",
+                                                Name = "Destino",
+                                                DataPropertyName = "Destino",
+                                                Width = 120
+                                            },
+                                            new DataGridViewTextBoxColumn()
+                                            {
+                                                HeaderText = "Protocolo",
+                                                Name = "Protocolo",
+                                                DataPropertyName = "Protocolo",
+                                                Width = 100
+                                            }                                           
+                                            });
         }
 
         private void incluiEventos()
@@ -49,7 +94,8 @@ namespace Trabalho_rede
         private void StopThread()
         {
             thread.Suspend();
-            
+            timer.Stop();
+
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -123,13 +169,18 @@ namespace Trabalho_rede
 
         private void montaTreeView(object objeto, TreeNodeCollection tv)
         {
+           
             foreach (PropertyInfo propInfo in objeto.GetType().GetProperties())
             {
                 if (!IsPropriedadeSimples(propInfo))
-                {                  
-                    TreeNode node = new TreeNode(propInfo.Name.ToUpper());
-                    this.montaTreeView(propInfo.GetValue(objeto), node.Nodes);
-                    tv.Add(node);
+                {
+                    if (propInfo.GetValue(objeto) != null)
+                    {
+                        TreeNode node = new TreeNode(propInfo.Name.ToUpper());
+                        this.montaTreeView(propInfo.GetValue(objeto), node.Nodes);
+                        tv.Add(node);
+                    }
+                    
                 }
                 else
                 {
@@ -147,8 +198,6 @@ namespace Trabalho_rede
             // Atribui a origem de dados ao DataGridView
             this.dgvPacotes.DataSource = bindingSource;
         }
-
-
 
     }
 

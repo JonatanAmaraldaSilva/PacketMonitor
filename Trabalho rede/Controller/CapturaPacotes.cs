@@ -11,6 +11,8 @@ using System.Net.Sockets;
 using System.Security.AccessControl;
 using System.Data.SqlTypes;
 using System.Runtime.InteropServices;
+using System.Diagnostics.Eventing.Reader;
+using System.Windows.Forms.VisualStyles;
 
 namespace Trabalho_rede
 {
@@ -22,6 +24,22 @@ namespace Trabalho_rede
 
         public ICaptureDevice Device { get => device; set => device = value; }
         public Enums.Protocolos Protocolo { get => protocolo; set => protocolo = value; }
+        public string Filter { get => retornaFiltro(); }
+
+
+        private string retornaFiltro()
+        {
+            switch (this.Protocolo)
+            {
+                case Enums.Protocolos.TCP:
+                    return "ip and tcp";
+                case Enums.Protocolos.UDP:
+                    return "ip and udp";
+                default:
+                     return "";
+
+            }
+        }
 
         public CapturaPacotes(ICaptureDevice device, Enums.Protocolos protocolo)
         {
@@ -35,20 +53,8 @@ namespace Trabalho_rede
             int readTime = 1000;
             device.Open(DeviceModes.Promiscuous, readTime);
 
-            switch (this.Protocolo)
-            {
-                case Enums.Protocolos.TCP:
-                    this.filter = "ip and tcp";
-                    break;
-                case Enums.Protocolos.UDP:
-                    this.filter = "ip and udp";
-                    break;
-
-            }
-
-
             //filter = this.protocolo.ToString();
-            device.Filter = filter;
+            device.Filter = this.Filter;
 
             PacketCapture e;
 
@@ -58,49 +64,13 @@ namespace Trabalho_rede
             {
                 try
                 {
-                
+                    Packet pacote = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
+                    IPv4Packet ipv4Pacote = pacote.Extract<IPv4Packet>();
 
-                   
-                    DateTime time = e.GetPacket().Timeval.Date.AddHours(-3);
-                    int len = e.GetPacket().PacketLength;
-
-                    Packet p = Packet.ParsePacket(e.GetPacket().LinkLayerType, e.GetPacket().Data);
-
-                    IPv4Packet ipv4Pacote = p.Extract<IPv4Packet>();
-
-                    string protocolo = ipv4Pacote.Protocol.ToString();
-                    var sourceAddress = ipv4Pacote.SourceAddress.ToString();
-                    var destinationAddress = ipv4Pacote.DestinationAddress.ToString();
-
-                    IPv4Header ipv4 = new IPv4Header(ipv4Pacote);
-
-                    if (protocolo == "Tcp")
-                    {
-
-                        TcpPacket tcpPacote = p.Extract<TcpPacket>();
-
-                        var data = BitConverter.ToString(tcpPacote.BytesSegment.Bytes).Replace("-", "");
-
-                        ipv4.Tcp = new TCP(tcpPacote.DestinationPort.ToString(), tcpPacote.SourcePort.ToString(), tcpPacote.Checksum.ToString(), data);
-
-                        var f =tcpPacote.Flags;
-
-                        var a = tcpPacote.HeaderData.ToString();
-                        var b = tcpPacote.Acknowledgment.ToString();
-                        var c = tcpPacote.Synchronize.ToString();
-                        var d = tcpPacote.Urgent;
-                        var i = tcpPacote.Push.ToString(); 
-                        var g = tcpPacote.Reset.ToString();
-                        var h = tcpPacote.Finished.ToString();
-                        var v = tcpPacote.SequenceNumber.ToString();
-                        var j = tcpPacote.WindowSize.ToString();
-                        var t = tcpPacote.AcknowledgmentNumber.ToString();
-                        pacoteList.Add(new Pacote(nrPacote, sourceAddress, destinationAddress, Enums.Protocolos.TCP, ipv4, time));
-                    }
-                    else if(protocolo == "Udp")
-                    {
-
-                    }
+                    pacoteList.Add(new Pacote(nrPacote: nrPacote,
+                                              pacote: pacote,
+                                              hora: e.GetPacket().Timeval.Date.AddHours(-3),
+                                              protocolo: (Enums.Protocolos)Enum.Parse(typeof(Enums.Protocolos), ipv4Pacote.Protocol.ToString().ToUpper()))); ;
 
 
                     nrPacote += 1;
@@ -109,10 +79,6 @@ namespace Trabalho_rede
                 catch
                 {
                 }
-
-                // Prints the time and length of each received packet
-
-
 
             }
 
