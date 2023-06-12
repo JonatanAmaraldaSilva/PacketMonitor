@@ -11,7 +11,7 @@ namespace Trabalho_rede
 {
     public class IPv4Header
     {
-        private IPVersion version ;
+        private string version ;
         private int headerLenght;
         private int typeofservice;
         private int totalPacketLength;
@@ -28,7 +28,7 @@ namespace Trabalho_rede
 
         private string data;
 
-        public IPVersion Version { get => version; set => version = value; }
+        public string Version { get => version; set => version = value; }
         public int HeaderLenght { get => headerLenght; set => headerLenght = value; }
         public int Typeofservice { get => typeofservice; set => typeofservice = value; }
         public int TotalPacketLength { get => totalPacketLength; set => totalPacketLength = value; }
@@ -48,7 +48,7 @@ namespace Trabalho_rede
         public IPv4Header(IPv4Packet ipv4Pacote)
         {
 
-            this.Version = ipv4Pacote.Version;
+            this.Version = ipv4Pacote.Version.ToString();
             this.HeaderLenght = ipv4Pacote.HeaderLength;
             this.Typeofservice = ipv4Pacote.TypeOfService;
             this.TotalPacketLength = ipv4Pacote.TotalPacketLength;
