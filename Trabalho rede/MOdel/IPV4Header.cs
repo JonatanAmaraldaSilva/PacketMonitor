@@ -38,7 +38,8 @@ namespace Trabalho_rede
         public int Ttl { get => ttl; set => ttl = value; }
         public string Protocol { get => protocol; set => protocol = value.ToUpper(); }
         public TCP Tcp { get => tcp; set => tcp = value; }
-      
+        public UDP Udp { get => udp; set => udp = value; }
+
         public ushort HeaderChecksum { get => headerChecksum; set => headerChecksum = value; }
         public string SourceIP { get => sourceIP; set => sourceIP = value; }
         public string DestinationIP { get => destinationIP; set => destinationIP = value; }
@@ -72,7 +73,7 @@ namespace Trabalho_rede
                     this.tcp = new TCP(ipv4Pacote.Extract<TcpPacket>());
                     break;
                 case "UDP":
-                    //atribuir novo objeto a this.udp
+                    this.udp = new UDP(ipv4Pacote.Extract<UdpPacket>());
                     break;
             }
         }

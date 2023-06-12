@@ -73,7 +73,7 @@ namespace Trabalho_rede
                                               protocolo: (Enums.Protocolos)Enum.Parse(typeof(Enums.Protocolos), ipv4Pacote.Protocol.ToString().ToUpper()))); ;
 
 
-                    nrPacote += 1;
+                    nrPacote ++;
 
                 }
                 catch
@@ -81,8 +81,6 @@ namespace Trabalho_rede
                 }
 
             }
-
-
         }
     }
 }
