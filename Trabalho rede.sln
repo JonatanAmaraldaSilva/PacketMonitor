@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trabalho rede", "Trabalho rede\Trabalho rede.csproj", "{F2A03225-BE5B-4C16-A4DC-C2D8137130D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketMonitor", "Trabalho rede\PacketMonitor.csproj", "{F2A03225-BE5B-4C16-A4DC-C2D8137130D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
