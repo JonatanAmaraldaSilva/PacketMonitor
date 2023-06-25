@@ -47,7 +47,7 @@ namespace Trabalho_rede
             this.Protocolo = protocolo;
         }
 
-        public void iniciaCaptura(List<Pacote> pacoteList, bool stop)
+        public void iniciaCaptura(List<Pacote> pacoteList, bool stop, ref int nrPacote)
         {
 
             int readTime = 1000;
@@ -57,8 +57,7 @@ namespace Trabalho_rede
             device.Filter = this.Filter;
 
             PacketCapture e;
-
-            int nrPacote = 1;
+        
 
             while (device.GetNextPacket(out e) != null || stop == false)
             {

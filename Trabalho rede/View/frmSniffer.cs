@@ -24,7 +24,8 @@ namespace Trabalho_rede
         ICaptureDevice device;
         Thread thread;
         bool inicia = false;
-        System.Timers.Timer timer = new System.Timers.Timer(500);
+        System.Timers.Timer timer = new System.Timers.Timer(1000);
+        int nrPacote = 1;
 
         public frmSniffer(ICaptureDevice device)
         {
@@ -93,13 +94,16 @@ namespace Trabalho_rede
 
         private void StopThread()
         {
-            thread.Suspend();
             timer.Stop();
-
+            timer.Elapsed -= Timer_Elapsed;
+            thread.Abort();
+            thread.Join();
+         
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            
             this.StopThread();
         }
 
@@ -129,8 +133,14 @@ namespace Trabalho_rede
                 this.btnIniciarParar.Text = "Parar";
                 inicia = true;
                 var protocoloenum = (Enums.Protocolos)Enum.Parse(typeof(Enums.Protocolos), this.cmbProtocolos.SelectedValue.ToString());
-                objCaptura = new CapturaPacotes(this.device, protocoloenum);
-                thread = new Thread(() => objCaptura.iniciaCaptura(pacoteList, inicia));
+
+                objCaptura = new CapturaPacotes(device: this.device, 
+                                                protocolo: protocoloenum);
+
+                thread = new Thread(() => objCaptura.iniciaCaptura(pacoteList: pacoteList,
+                                                                   stop: inicia,
+                                                                   nrPacote: ref this.nrPacote));
+
                 thread.Start();
                 timer.Start();
             }
@@ -138,7 +148,7 @@ namespace Trabalho_rede
             {
                 this.btnIniciarParar.Text = "Iniciar";
                 inicia = false;
-                thread.Suspend();
+                //thread.Suspend();
                 timer.Stop();
                 //this.atualizaGrid();
             }
@@ -147,6 +157,7 @@ namespace Trabalho_rede
 
         private void btnLimpa_Click(object sender, EventArgs e)
         {
+            this.nrPacote = 1;
             this.pacoteList.Clear();
             this.atualizaGrid();
         }
