@@ -26,13 +26,15 @@ O sniffer utiliza as seguintes bibliotecas externas:
 
 - PacketDotNet: Biblioteca para manipulação de pacotes de rede em C#.
 - SharpCap: Biblioteca para captura de pacotes de rede em C#.
+- NPCAP: Biblioteca
 
 Certifique-se de instalar essas dependências antes de executar o projeto.
 
 ## Instruções de Uso
 
-1. Clone ou faça o download do repositório.
-2. Abra o projeto no Visual Studio 2022.
-3. Compile o projeto para gerar o executável.
-4. Certifique-se de ter as dependências instaladas corretamente.
-5. Execute o aplicativo gerado.
+1.Instale o npacp em https://npcap.com/.
+2. Clone ou faça o download do repositório.
+3. Abra o projeto no Visual Studio 2022.
+4. Compile o projeto para gerar o executável.
+5. Certifique-se de ter as dependências instaladas corretamente.
+6. Execute o aplicativo gerado.
